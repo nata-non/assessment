@@ -2,15 +2,16 @@ package main
 
 import (
 	"fmt"
+	"log"
+	"net/http"
+	"os"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 	"github.com/nata-non/assessment/model"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	"log"
-	"net/http"
-	"os"
 )
 
 func main() {
@@ -18,17 +19,17 @@ func main() {
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
-	dsn := "host=localhost user=postgres password=postgres dbname=postgres port=2022 sslmode=disable TimeZone=Asia/Shanghai"
+	dsn := "host=localhost user=postgres password=postgres dbname=postgres port=5432 sslmode=disable TimeZone=Asia/Shanghai"
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	fmt.Println("Please use server.go for main file")
 	db.AutoMigrate()
 	fmt.Println("start at port:", os.Getenv("PORT"))
-	list := []model.User{}
+	list := []model.Expenses{}
 	db.Find(&list)
 	fmt.Println(list)
 	app := fiber.New()
 	app.Get("/expenses", func(c *fiber.Ctx) error {
-		return c.Status(http.StatusOK).JSON(model.User{
+		return c.Status(http.StatusOK).JSON(model.Expenses{
 			ID:     0,
 			Title:  "Shopee",
 			Amount: 690,
@@ -47,7 +48,7 @@ func main() {
 		if err := ctx.Status(http.StatusBadRequest).BodyParser(&p); err != nil {
 			return err
 		}
-		a := model.User{
+		a := model.Expenses{
 			Title:  p.Title,
 			Amount: p.Amount,
 			Note:   p.Note,
@@ -57,7 +58,7 @@ func main() {
 		return ctx.Status(http.StatusOK).JSON(a)
 	})
 	app.Get("/expenses/:id", func(ctx *fiber.Ctx) error {
-		return ctx.Status(http.StatusOK).JSON(model.User{
+		return ctx.Status(http.StatusOK).JSON(model.Expenses{
 			ID:     0,
 			Title:  "Shopee",
 			Amount: 690,
@@ -66,7 +67,7 @@ func main() {
 		})
 	})
 	app.Put("/expenses/:id", func(ctx *fiber.Ctx) error {
-		return ctx.Status(http.StatusOK).JSON(model.User{
+		return ctx.Status(http.StatusOK).JSON(model.Expenses{
 			ID:     0,
 			Title:  "Shopee",
 			Amount: 690,

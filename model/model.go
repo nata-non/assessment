@@ -1,6 +1,6 @@
 package model
 
-type User struct {
+type Expenses struct {
 	ID     uint     `gorm:"primaryKey"`
 	Title  string   `json:"title"`
 	Amount int      `json:"amount"`
