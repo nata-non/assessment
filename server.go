@@ -25,17 +25,10 @@ func main() {
 	db.AutoMigrate()
 	fmt.Println("start at port:", os.Getenv("PORT"))
 	list := []model.Expenses{}
-	db.Find(&list)
-	fmt.Println(list)
 	app := fiber.New()
 	app.Get("/expenses", func(c *fiber.Ctx) error {
-		return c.Status(http.StatusOK).JSON(model.Expenses{
-			ID:     0,
-			Title:  "Shopee",
-			Amount: 690,
-			Note:   "Pay later",
-			Tags:   []string{"Dog", "Cat"},
-		})
+		db.Find(&list)
+		return c.Status(http.StatusOK).JSON(list)
 	})
 	app.Post("/expenses", func(ctx *fiber.Ctx) error {
 		//a := new(model.User)
@@ -45,7 +38,7 @@ func main() {
 			Note   string   `json:"note"`
 			Tags   []string `json:"tags"`
 		}{}
-		if err := ctx.Status(http.StatusBadRequest).BodyParser(&p); err != nil {
+		if err := ctx.BodyParser(&p); err != nil {
 			return err
 		}
 		a := model.Expenses{
