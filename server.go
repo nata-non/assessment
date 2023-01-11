@@ -51,13 +51,9 @@ func main() {
 		return ctx.Status(http.StatusOK).JSON(a)
 	})
 	app.Get("/expenses/:id", func(ctx *fiber.Ctx) error {
-		return ctx.Status(http.StatusOK).JSON(model.Expenses{
-			ID:     0,
-			Title:  "Shopee",
-			Amount: 690,
-			Note:   "Pay later",
-			Tags:   []string{"Dog", "Cat"},
-		})
+		id := ctx.Params("id")
+		db.Find(&list, id)
+		return ctx.Status(http.StatusOK).JSON(&list)
 	})
 	app.Put("/expenses/:id", func(ctx *fiber.Ctx) error {
 		return ctx.Status(http.StatusOK).JSON(model.Expenses{
