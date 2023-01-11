@@ -56,13 +56,19 @@ func main() {
 		return ctx.Status(http.StatusOK).JSON(&list)
 	})
 	app.Put("/expenses/:id", func(ctx *fiber.Ctx) error {
-		return ctx.Status(http.StatusOK).JSON(model.Expenses{
-			ID:     0,
-			Title:  "Shopee",
-			Amount: 690,
-			Note:   "Pay later",
-			Tags:   []string{"Dog", "Cat"},
-		})
+		p := struct {
+			Title  string   `json:"title"`
+			Amount int      `json:"amount"`
+			Note   string   `json:"note"`
+			Tags   []string `json:"tags"`
+		}{}
+		if err := ctx.BodyParser(&p); err != nil {
+			return err
+		}
+		id := ctx.Params("id")
+		db.Find(&list, id)
+		db.Model(&list).Updates(map[string]interface{}{"title": p.Title, "amount": p.Amount, "note": p.Note, "tags": &p.Tags})
+		return ctx.Status(http.StatusOK).JSON(&list)
 	})
 	log.Fatal(app.Listen(":" + os.Getenv("PORT")))
 }
