@@ -70,6 +70,12 @@ func main() {
 		db.Model(&list).Updates(map[string]interface{}{"title": p.Title, "amount": p.Amount, "note": p.Note, "tags": &p.Tags})
 		return ctx.Status(http.StatusOK).JSON(&list)
 	})
+	app.Delete("/expenses/:id", func(ctx *fiber.Ctx) error {
+		id := ctx.Params("id")
+		db.Find(&list, id)
+		db.Delete(&list)
+		return ctx.Status(http.StatusOK).JSON(&list)
+	})
 	log.Fatal(app.Listen(":" + os.Getenv("PORT")))
 }
 func CheckError(err error) {
